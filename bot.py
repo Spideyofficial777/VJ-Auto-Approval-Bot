@@ -1,6 +1,6 @@
-# Don't Remove Credit @VJ_Botz
+# Don't Remove Credit @Spidey_official_777
 # Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
+# Ask Doubt on telegram @Spidey_official_777
 
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram import filters, Client, errors, enums
@@ -12,9 +12,9 @@ import random, asyncio
 
 app = Client(
     "approver",
-    api_id=cfg.API_ID,
-    api_hash=cfg.API_HASH,
-    bot_token=cfg.BOT_TOKEN
+    api_id=cfg.28519661,
+    api_hash=cfg.d47c74c8a596fd3048955b322304109d,
+    bot_token=cfg.7236731343:AAFlbv9sD-yU2orOehSoUZZPV0UD56eTLls
 )
 
 gif = [
@@ -42,7 +42,7 @@ async def approve(_, m : Message):
         add_group(m.chat.id)
         await app.approve_chat_join_request(op.id, kk.id)
         img = random.choice(gif)
-        await app.send_video(kk.id,img, "**Hello {}!\nWelcome To {}\n\n__Powerd By : @VJ_Botz __**".format(m.from_user.mention, m.chat.title))
+        await app.send_video(kk.id,img, "**Hello {}!\nWelcome To {}\n\n__Powerd By : @Spidey_official_777**".format(m.from_user.mention, m.chat.title))
         add_user(kk.id)
     except errors.PeerIdInvalid as e:
         print("user isn't start bot(means group)")
@@ -59,10 +59,10 @@ async def op(_, m :Message):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🗯 Channel", url="https://t.me/vj_botz"),
-                        InlineKeyboardButton("💬 Support", url="https://t.me/vj_bot_disscussion")
+                        InlineKeyboardButton("🗯 Channel", url="https://t.me/+wqqdiBLf6mI5MmU1"),
+                        InlineKeyboardButton("💬 Support", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ],[
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/vjmasterblastbot?startgroup")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ]
                 ]
             )
@@ -73,7 +73,7 @@ async def op(_, m :Message):
             keyboar = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/vjmasterblastbot?startgroup")
+                        InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ]
                 ]
             )
@@ -101,10 +101,10 @@ async def chk(_, cb : CallbackQuery):
             keyboard = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🗯 Channel", url="https://t.me/VJ_Botz"),
-                        InlineKeyboardButton("💬 Support", url="https://t.me/vj_bot_disscussion")
+                        InlineKeyboardButton("🗯 Channel", url="https://t.me/+wqqdiBLf6mI5MmU1"),
+                        InlineKeyboardButton("💬 Support", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ],[
-                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/vjmasterblastbot?startgroup")
+                        InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ]
                 ]
             )
