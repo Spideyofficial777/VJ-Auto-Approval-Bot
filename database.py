@@ -1,4 +1,4 @@
-GNU nano 8.0      database.py
+
 # database.py
 users = []
 groups = []
