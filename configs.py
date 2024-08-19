@@ -1,6 +1,6 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
+# Don't Remove Credit @SPIDEY_OFFICIAL_777
+# Subscribe YouTube Channel For Amazing Bot @SPIDEY_OFFICIAL_777
+# Ask Doubt on telegram @SPIDEY_OFFICIAL_777
 
 
 from os import path, getenv
