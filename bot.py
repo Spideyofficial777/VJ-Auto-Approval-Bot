@@ -1,76 +1,59 @@
-# Don't Remove Credit @Spidey_official_777
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @Spidey_official_777
-
+from pyrogram import Client, filters, enums, errors
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from pyrogram import filters, Client, errors, enums
 from pyrogram.errors import UserNotParticipant
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from database import add_user, add_group, all_users, all_groups, users, remove_user
 from configs import cfg
-import random, asyncio
+import asyncio
 
 app = Client(
     "approver",
-    api_id=cfg.28519661,
-    api_hash=cfg.d47c74c8a596fd3048955b322304109d,
-    bot_token=cfg.7236731343:AAFlbv9sD-yU2orOehSoUZZPV0UD56eTLls
+    api_id=cfg.API_ID,
+    api_hash=cfg.API_HASH,
+    bot_token=cfg.BOT_TOKEN
 )
 
-gif = [
-    'https://te.legra.ph/file/a1b3d4a7b5fce249902f7.mp4',
-    'https://te.legra.ph/file/0c855143a4039108df602.mp4',
-    'https://te.legra.ph/file/d7f3f18a92e6f7add8fcd.mp4',
-    'https://te.legra.ph/file/9e334112ee3a4000c4164.mp4',
-    'https://te.legra.ph/file/652fc39ae6295272699c6.mp4',
-    'https://te.legra.ph/file/702ca8761c3fd9c1b91e8.mp4',
-    'https://te.legra.ph/file/a1b3d4a7b5fce249902f7.mp4',
-    'https://te.legra.ph/file/d7f3f18a92e6f7add8fcd.mp4',
-    'https://te.legra.ph/file/0c855143a4039108df602.mp4',
-    'https://te.legra.ph/file/9e334112ee3a4000c4164.mp4',
-    'https://te.legra.ph/file/702ca8761c3fd9c1b91e8.mp4'
-]
+# Updated image for welcome message
+WELCOME_IMAGE_URL = "https://i.ibb.co/CPxdkHR/IMG-20240818-192201-633.jpg"
 
-
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Main process ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+# Approve all pending requests when bot starts
 @app.on_chat_join_request(filters.group | filters.channel & ~filters.private)
-async def approve(_, m : Message):
-    op = m.chat
-    kk = m.from_user
+async def approve_all_requests(_, m: Message):
     try:
         add_group(m.chat.id)
-        await app.approve_chat_join_request(op.id, kk.id)
-        img = random.choice(gif)
-        await app.send_video(kk.id,img, "**Hello {}!\nWelcome To {}\n\n__Powerd By : @Spidey_official_777**".format(m.from_user.mention, m.chat.title))
-        add_user(kk.id)
-    except errors.PeerIdInvalid as e:
-        print("user isn't start bot(means group)")
+        await app.approve_chat_join_request(m.chat.id, m.from_user.id)
+        await app.send_photo(m.from_user.id, WELCOME_IMAGE_URL, 
+                             caption=f"**Hello {m.from_user.mention}!\nWelcome to {m.chat.title}\n\n__Powered by: @Spidey_official_777__**")
+        add_user(m.from_user.id)
+    except errors.PeerIdInvalid:
+        print("User hasn't started the bot (PeerIdInvalid)")
     except Exception as err:
-        print(str(err))    
- 
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Start ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        print(str(err))
 
 @app.on_message(filters.command("start"))
-async def op(_, m :Message):
+async def start(_, m: Message):
     try:
-        await app.get_chat_member(cfg.CHID, m.from_user.id) 
+        await app.get_chat_member(cfg.CHID, m.from_user.id)
         if m.chat.type == enums.ChatType.PRIVATE:
             keyboard = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton("🗯 Channel", url="https://t.me/+wqqdiBLf6mI5MmU1"),
                         InlineKeyboardButton("💬 Support", url="https://t.me/+wqqdiBLf6mI5MmU1")
-                    ],[
+                    ],
+                    [
                         InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ]
                 ]
             )
             add_user(m.from_user.id)
-            await m.reply_photo("https://graph.org/file/d57d6f83abb6b8d0efb02.jpg", caption="**🦊 Hello {}!\nI'm an auto approve [Admin Join Requests]({}) Bot.\nI can approve users in Groups/Channels.Add me to your chat and promote me to admin with add members permission.\n\n__Powerd By : @VJ_Botz __**".format(m.from_user.mention, "https://t.me/telegram/153"), reply_markup=keyboard)
-    
-        elif m.chat.type == enums.ChatType.GROUP or enums.ChatType.SUPERGROUP:
-            keyboar = InlineKeyboardMarkup(
+            await m.reply_photo(
+                WELCOME_IMAGE_URL,
+                caption=f"**🦊 Hello {m.from_user.mention}!\nI'm an auto-approve [Admin Join Requests](https://t.me/telegram/153) bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.\n\n__Powered by: @Spidey_official_777__**",
+                reply_markup=keyboard
+            )
+        elif m.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+            keyboard = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton("💁‍♂️ Start me private 💁‍♂️", url="https://t.me/+wqqdiBLf6mI5MmU1")
@@ -78,23 +61,18 @@ async def op(_, m :Message):
                 ]
             )
             add_group(m.chat.id)
-            await m.reply_text("**🦊 Hello {}!\nwrite me private for more details**".format(m.from_user.first_name), reply_markup=keyboar)
-        print(m.from_user.first_name +" Is started Your Bot!")
-
+            await m.reply_text(f"**🦊 Hello {m.from_user.first_name}!\nWrite me privately for more details**", reply_markup=keyboard)
+        print(f"{m.from_user.first_name} has started your bot!")
     except UserNotParticipant:
         key = InlineKeyboardMarkup(
             [
-                [
-                    InlineKeyboardButton("🍀 Check Again 🍀", "chk")
-                ]
+                [InlineKeyboardButton("🍀 Check Again 🍀", "chk")]
             ]
         )
-        await m.reply_text("**⚠️Access Denied!⚠️\n\nPlease Join @{} to use me.If you joined click check again button to confirm.**".format(cfg.FSUB), reply_markup=key)
-
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ callback ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        await m.reply_text(f"**⚠️ Access Denied! ⚠️\n\nPlease join @{cfg.FSUB} to use me. If you've already joined, click 'Check Again' to confirm.**", reply_markup=key)
 
 @app.on_callback_query(filters.regex("chk"))
-async def chk(_, cb : CallbackQuery):
+async def check_subscription(_, cb: CallbackQuery):
     try:
         await app.get_chat_member(cfg.CHID, cb.from_user.id)
         if cb.message.chat.type == enums.ChatType.PRIVATE:
@@ -103,93 +81,107 @@ async def chk(_, cb : CallbackQuery):
                     [
                         InlineKeyboardButton("🗯 Channel", url="https://t.me/+wqqdiBLf6mI5MmU1"),
                         InlineKeyboardButton("💬 Support", url="https://t.me/+wqqdiBLf6mI5MmU1")
-                    ],[
+                    ],
+                    [
                         InlineKeyboardButton("➕ Add me to your Chat ➕", url="https://t.me/+wqqdiBLf6mI5MmU1")
                     ]
                 ]
             )
             add_user(cb.from_user.id)
-            await cb.message.edit("**🦊 Hello {}!\nI'm an auto approve [Admin Join Requests]({}) Bot.\nI can approve users in Groups/Channels.Add me to your chat and promote me to admin with add members permission.\n\n__Powerd By : @VJ_Botz __**".format(cb.from_user.mention, "https://t.me/telegram/153"), reply_markup=keyboard, disable_web_page_preview=True)
-        print(cb.from_user.first_name +" Is started Your Bot!")
+            await cb.message.edit(
+                f"**🦊 Hello {cb.from_user.mention}!\nI'm an auto-approve [Admin Join Requests](https://t.me/telegram/153) bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.\n\n__Powered by: @Spidey_official_777__**",
+                reply_markup=keyboard,
+                disable_web_page_preview=True
+            )
+        print(f"{cb.from_user.first_name} has started your bot!")
     except UserNotParticipant:
-        await cb.answer("🙅‍♂️ You are not joined to channel join and try again. 🙅‍♂️")
-
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ info ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        await cb.answer("🙅‍♂️ You are not joined to the channel. Join and try again. 🙅‍♂️")
 
 @app.on_message(filters.command("users") & filters.user(cfg.SUDO))
-async def dbtool(_, m : Message):
-    xx = all_users()
-    x = all_groups()
-    tot = int(xx + x)
-    await m.reply_text(text=f"""
+async def dbtool(_, m: Message):
+    total_users = all_users()
+    total_groups = all_groups()
+    total = total_users + total_groups
+    await m.reply_text(f"""
 🍀 Chats Stats 🍀
-🙋‍♂️ Users : `{xx}`
-👥 Groups : `{x}`
-🚧 Total users & groups : `{tot}` """)
-
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🙋‍♂️ Users : `{total_users}`
+👥 Groups : `{total_groups}`
+🚧 Total users & groups : `{total}`""")
 
 @app.on_message(filters.command("bcast") & filters.user(cfg.SUDO))
-async def bcast(_, m : Message):
-    allusers = users
-    lel = await m.reply_text("`⚡️ Processing...`")
-    success = 0
-    failed = 0
-    deactivated = 0
-    blocked = 0
-    for usrs in allusers.find():
+async def broadcast(_, m: Message):
+    all_users = users
+    processing_msg = await m.reply_text("⚡️ Processing...")
+    success, failed, deactivated, blocked = 0, 0, 0, 0
+    
+    for user in all_users.find():
         try:
-            userid = usrs["user_id"]
-            #print(int(userid))
-            if m.command[0] == "bcast":
-                await m.reply_to_message.copy(int(userid))
-            success +=1
+            user_id = user["user_id"]
+            await m.reply_to_message.copy(user_id)
+            success += 1
         except FloodWait as ex:
             await asyncio.sleep(ex.value)
-            if m.command[0] == "bcast":
-                await m.reply_to_message.copy(int(userid))
+            await m.reply_to_message.copy(user_id)
         except errors.InputUserDeactivated:
-            deactivated +=1
-            remove_user(userid)
+            deactivated += 1
+            remove_user(user_id)
         except errors.UserIsBlocked:
-            blocked +=1
+            blocked += 1
         except Exception as e:
             print(e)
-            failed +=1
+            failed += 1
 
-    await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
-
-#━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Broadcast Forward ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    await processing_msg.edit(f"✅ Successfully broadcasted to `{success}` users.\n❌ Failed to reach `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users.")
 
 @app.on_message(filters.command("fcast") & filters.user(cfg.SUDO))
-async def fcast(_, m : Message):
-    allusers = users
-    lel = await m.reply_text("`⚡️ Processing...`")
-    success = 0
-    failed = 0
-    deactivated = 0
-    blocked = 0
-    for usrs in allusers.find():
+async def forward_broadcast(_, m: Message):
+    all_users = users
+    processing_msg = await m.reply_text("⚡️ Processing...")
+    success, failed, deactivated, blocked = 0, 0, 0, 0
+    
+    for user in all_users.find():
         try:
-            userid = usrs["user_id"]
-            #print(int(userid))
-            if m.command[0] == "fcast":
-                await m.reply_to_message.forward(int(userid))
-            success +=1
+            user_id = user["user_id"]
+            await m.reply_to_message.forward(user_id)
+            success += 1
         except FloodWait as ex:
             await asyncio.sleep(ex.value)
-            if m.command[0] == "fcast":
-                await m.reply_to_message.forward(int(userid))
+            await m.reply_to_message.forward(user_id)
         except errors.InputUserDeactivated:
-            deactivated +=1
-            remove_user(userid)
+            deactivated += 1
+            remove_user(user_id)
         except errors.UserIsBlocked:
-            blocked +=1
+            blocked += 1
         except Exception as e:
             print(e)
-            failed +=1
+            failed += 1
 
-    await lel.edit(f"✅Successfull to `{success}` users.\n❌ Faild to `{failed}` users.\n👾 Found `{blocked}` Blocked users \n👻 Found `{deactivated}` Deactivated users.")
+    await processing_msg.edit(f"✅ Successfully forwarded to `{success}` users.\n❌ Failed to reach `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users.")
 
-print("I'm Alive Now!")
-app.run()
+# Automatically accept all previous pending requests
+async def accept_all_pending_requests():
+    try:
+        group_list = all_groups()
+        for group in group_list:
+            members = await app.get_chat_members(group['chat_id'], filter="restricted")
+            for member in members:
+                if member.user.is_bot or member.user.is_deleted:
+                    continue
+                try:
+                    await app.approve_chat_join_request(group['chat_id'], member.user.id)
+                    await app.send_photo(member.user.id, WELCOME_IMAGE_URL,
+                                         caption=f"**Hello {member.user.mention}!\nWelcome to {group['title']}\n\n__Powered by: @Spidey_official_777__**")
+                except Exception as e:
+                    print(f"Failed to approve {member.user.id} in {group['chat_id']}: {e}")
+    except Exception as e:
+        print(f"Error in accepting pending requests: {e}")
+
+# Run the bot and accept pending requests when it starts
+async def main():
+    await app.start()
+    await accept_all_pending_requests()
+    print("Bot is now running!")
+    await app.stop()
+
+if __name__ == "__main__":
+    app.run(main)
