@@ -1,11 +1,12 @@
-from pyrogram import Client, filters, enums, errors
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram import filters, Client, errors, enums
 from pyrogram.errors import UserNotParticipant
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from database import add_user, add_group, all_users, all_groups, users, remove_user
 from configs import cfg
 import asyncio
 
+# Initialize the bot with the configuration from configs.py
 app = Client(
     "approver",
     api_id=cfg.API_ID,
@@ -13,17 +14,19 @@ app = Client(
     bot_token=cfg.BOT_TOKEN
 )
 
-# Updated image for welcome message
-WELCOME_IMAGE_URL = "https://i.ibb.co/CPxdkHR/IMG-20240818-192201-633.jpg"
+# URL of the image to be sent in the welcome message
+welcome_image_url = "https://i.ibb.co/CPxdkHR/IMG-20240818-192201-633.jpg"
 
-# Approve all pending requests when bot starts
 @app.on_chat_join_request(filters.group | filters.channel & ~filters.private)
-async def approve_all_requests(_, m: Message):
+async def approve(_, m: Message):
     try:
         add_group(m.chat.id)
         await app.approve_chat_join_request(m.chat.id, m.from_user.id)
-        await app.send_photo(m.from_user.id, WELCOME_IMAGE_URL, 
-                             caption=f"**Hello {m.from_user.mention}!\nWelcome to {m.chat.title}\n\n__Powered by: @Spidey_official_777__**")
+        await app.send_photo(
+            m.from_user.id,
+            welcome_image_url,
+            caption=f"**Hello {m.from_user.mention}!\nWelcome to {m.chat.title}\n\n__Powered by: @Spidey_official_777__**"
+        )
         add_user(m.from_user.id)
     except errors.PeerIdInvalid:
         print("User hasn't started the bot (PeerIdInvalid)")
@@ -48,7 +51,7 @@ async def start(_, m: Message):
             )
             add_user(m.from_user.id)
             await m.reply_photo(
-                WELCOME_IMAGE_URL,
+                welcome_image_url,
                 caption=f"**🦊 Hello {m.from_user.mention}!\nI'm an auto-approve [Admin Join Requests](https://t.me/telegram/153) bot.\nI can approve users in Groups/Channels. Add me to your chat and promote me to admin with add members permission.\n\n__Powered by: @Spidey_official_777__**",
                 reply_markup=keyboard
             )
@@ -66,7 +69,9 @@ async def start(_, m: Message):
     except UserNotParticipant:
         key = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("🍀 Check Again 🍀", "chk")]
+                [
+                    InlineKeyboardButton("🍀 Check Again 🍀", "chk")
+                ]
             ]
         )
         await m.reply_text(f"**⚠️ Access Denied! ⚠️\n\nPlease join @{cfg.FSUB} to use me. If you've already joined, click 'Check Again' to confirm.**", reply_markup=key)
@@ -158,30 +163,5 @@ async def forward_broadcast(_, m: Message):
 
     await processing_msg.edit(f"✅ Successfully forwarded to `{success}` users.\n❌ Failed to reach `{failed}` users.\n👾 Found `{blocked}` blocked users.\n👻 Found `{deactivated}` deactivated users.")
 
-# Automatically accept all previous pending requests
-async def accept_all_pending_requests():
-    try:
-        group_list = all_groups()
-        for group in group_list:
-            members = await app.get_chat_members(group['chat_id'], filter="restricted")
-            for member in members:
-                if member.user.is_bot or member.user.is_deleted:
-                    continue
-                try:
-                    await app.approve_chat_join_request(group['chat_id'], member.user.id)
-                    await app.send_photo(member.user.id, WELCOME_IMAGE_URL,
-                                         caption=f"**Hello {member.user.mention}!\nWelcome to {group['title']}\n\n__Powered by: @Spidey_official_777__**")
-                except Exception as e:
-                    print(f"Failed to approve {member.user.id} in {group['chat_id']}: {e}")
-    except Exception as e:
-        print(f"Error in accepting pending requests: {e}")
-
-# Run the bot and accept pending requests when it starts
-async def main():
-    await app.start()
-    await accept_all_pending_requests()
-    print("Bot is now running!")
-    await app.stop()
-
-if __name__ == "__main__":
-    app.run(main)
+print("Bot is now running!")
+app.run()
